@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Build output
+build/
+dist/
+*.spec
+
+# Local / personal files (never commit)
+*.log
+*.bak*
+*.apk
+*.zip
+btsnoop/
+captures/
