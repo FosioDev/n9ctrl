@@ -31,6 +31,8 @@ a maioria das configurações sem pegar o celular.
 |---|---|
 | ![Aba Áudio](docs/img/audio.png) | ![Aba Voz](docs/img/voice.png) |
 
+A interface abre em inglês (padrão) e também existe em português: Ajustes → Idioma. O menu da bandeja acompanha. Os prints acima estão em inglês.
+
 ## Requisitos
 
 - Windows 10 ou 11 (com o WebView2, que já vem no Windows 11)

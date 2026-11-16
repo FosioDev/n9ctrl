@@ -31,7 +31,7 @@ other settings without picking up your phone.
 |---|---|
 | ![Audio tab](docs/img/audio.png) | ![Voice tab](docs/img/voice.png) |
 
-The interface is currently in Brazilian Portuguese.
+The interface is in English by default and also available in Brazilian Portuguese (Settings → Language). The tray menu follows the same setting.
 
 ## Requirements
 
