@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 if sys.platform != "win32":
-    sys.exit("O N9Ctrl so funciona no Windows.")
+    sys.exit("N9Ctrl only works on Windows.")
 
 ctypes.windll.user32.SetProcessDPIAware()
 
@@ -30,7 +30,22 @@ U32.LoadImageW.restype = ctypes.c_void_p
 U32.SendMessageW.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_void_p]
 U32.SendMessageW.restype = ctypes.c_void_p
 
-PADRAO = {"fechar_para_bandeja": True, "iniciar_com_windows": False, "notificar_bateria": True}
+PADRAO = {"fechar_para_bandeja": True, "iniciar_com_windows": False, "notificar_bateria": True, "idioma": "en"}
+
+# Textos da bandeja e dos avisos. O ingles e o texto-fonte; aqui ficam as versoes em portugues.
+TXT_PT = {
+    "Open N9Ctrl": "Abrir N9Ctrl", "Exit": "Sair",
+    "Noise cancelling": "Cancelamento de ruído", "Ambient mode": "Modo ambiente", "Off": "Desligado", "Ambient": "Ambiente",
+    "{n}: dongle not found": "{n}: dongle não encontrado", "{n}: headset off": "{n}: fone desligado",
+    "{n} battery at {b}%.": "Bateria do {n} em {b}%.",
+}
+IDIOMA = {"v": "en"}
+
+
+def tr(s, **kw):
+    s = TXT_PT.get(s, s) if IDIOMA["v"] == "pt" else s
+    return s.format(**kw) if kw else s
+
 log = logging.getLogger("n9ctrl")
 
 
@@ -117,6 +132,7 @@ class App:
 
         self.webview = webview
         self.config = Config()
+        IDIOMA["v"] = self.config.get("idioma", "en")
         self.janela = None
         self.pronta = False
         self._hwnd = None
@@ -162,7 +178,7 @@ class App:
             if b <= 15 and not self.avisou_bateria:
                 self.avisou_bateria = True
                 try:
-                    self.icone.notify(f"Bateria do {self.devs[dev_id].nome} em {b}%.", TITULO)
+                    self.icone.notify(tr("{n} battery at {b}%.", n=self.devs[dev_id].nome, b=b), TITULO)
                 except Exception:
                     pass
             elif b > 25:
@@ -181,8 +197,14 @@ class App:
             except Exception:
                 log.exception("registro")
                 return False
+        if chave == "idioma":
+            if valor not in ("en", "pt"):
+                return False
+            IDIOMA["v"] = valor
         self.config[chave] = valor
         self.config.salvar()
+        if chave == "idioma":
+            self._atualizar_bandeja()
         return True
 
     # ------------------------------------------------------------ janela
@@ -297,17 +319,17 @@ class App:
             def marcado(m):
                 return lambda item: d.estado.get("modo") == m
             yield MenuItem(lambda item: app._resumo(d), None, enabled=False)
-            for m, rot in (("anc", "Cancelamento de ruído"), ("ambiente", "Modo ambiente"), ("off", "Desligado")):
-                yield MenuItem(rot, modo(m), checked=marcado(m), radio=True,
+            for m, rot in (("anc", "Noise cancelling"), ("ambiente", "Ambient mode"), ("off", "Off")):
+                yield MenuItem(tr(rot), modo(m), checked=marcado(m), radio=True,
                                enabled=lambda item: bool(d.estado.get("fone")))
 
         def menu():
-            yield MenuItem("Abrir N9Ctrl", bg(self.mostrar), default=True)
+            yield MenuItem(tr("Open N9Ctrl"), bg(self.mostrar), default=True)
             for d in app.devs.values():
                 yield Menu.SEPARATOR
                 yield from itens_dev(d)
             yield Menu.SEPARATOR
-            yield MenuItem("Sair", bg(self.sair))
+            yield MenuItem(tr("Exit"), bg(self.sair))
 
         self.icone = pystray.Icon(TITULO, desenhar_icone(None, None), TITULO, Menu(menu))
         threading.Thread(target=self.icone.run, daemon=True, name="bandeja").start()
@@ -315,11 +337,11 @@ class App:
     def _resumo(self, d):
         e = d.estado
         if not e.get("dongle"):
-            return f"{d.nome}: dongle não encontrado"
+            return tr("{n}: dongle not found", n=d.nome)
         if not e.get("fone"):
-            return f"{d.nome}: fone desligado"
+            return tr("{n}: headset off", n=d.nome)
         bat = f"{e['bateria']}%" if e.get("bateria") is not None else "–"
-        return f"{d.nome}: {bat} · {NOMES_MODO.get(e.get('modo'), '?')}"
+        return f"{d.nome}: {bat} · {tr(NOMES_MODO.get(e.get('modo'), '?'))}"
 
     def _atualizar_bandeja(self):
         if not self.icone:
@@ -359,7 +381,7 @@ def aplicar_tema(hwnd):
             U32.SendMessageW(h, 0x0080, ctypes.c_void_p(tipo), ctypes.c_void_p(hi))  # WM_SETICON
 
 
-NOMES_MODO = {"anc": "ANC", "ambiente": "Ambiente", "off": "Desligado"}
+NOMES_MODO = {"anc": "ANC", "ambiente": "Ambient", "off": "Off"}
 COR_MODO = {"anc": (255, 42, 109), "ambiente": (5, 217, 232), "off": (147, 132, 196)}
 
 
@@ -405,7 +427,7 @@ def main():
     try:
         import webview
     except ImportError:
-        U32.MessageBoxW(None, "Faltam dependências. Rode o run.bat.", TITULO, 0x10)
+        U32.MessageBoxW(None, "Missing dependencies. Run run.bat.", TITULO, 0x10)
         return
     App("--bandeja" in sys.argv)
     # private_mode=True faz o pywebview usar uma porta livre aleatoria. Com False ele usa

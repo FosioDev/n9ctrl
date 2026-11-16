@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>N9Ctrl</title>
@@ -9,7 +9,7 @@
 
 
 <div class="layout">
-  <nav class="lateral" aria-label="Navegação">
+  <nav class="lateral" aria-label="Navigation" data-i-aria="Navigation">
     <div class="marca">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <defs><linearGradient id="gfone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff71ce"/><stop offset="1" stop-color="#7b2ff7"/></linearGradient></defs>
@@ -19,19 +19,20 @@
     </svg>
     <div><b>N9</b><span>Ctrl</span></div>
   </div>
-    <p class="lateral-titulo">Dispositivos</p>
+    <p class="lateral-titulo" data-i="Devices">Devices</p>
     <div id="lista"></div>
     <div class="separador"></div>
     <button class="nav-item" data-view="ajustes">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      Ajustes
+      <span data-i="Settings">Settings</span>
     </button>
   </nav>
   <main id="conteudo" tabindex="-1">
-    <div class="carregando"><div class="radar"></div>Procurando o dongle…</div>
+    <div class="carregando"><div class="radar"></div><span data-i="Searching for the dongle…">Searching for the dongle…</span></div>
   </main>
 </div>
 <div id="toasts" aria-live="polite"></div>
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

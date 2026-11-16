@@ -145,7 +145,7 @@ class N9:
 
     id = "n9"
     nome = "AKG N9 Hybrid"
-    conexao = "Dongle USB 2.4 GHz"
+    conexao = "USB 2.4 GHz dongle"
     recursos = ["bateria", "modo", "ajustes"]
 
     def __init__(self, ao_mudar):
