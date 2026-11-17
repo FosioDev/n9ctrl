@@ -1,0 +1,3 @@
+# AKG N9 Hybrid: allow the desktop user to access the vendor HID interface.
+# Without this the hidraw node is root:root 0600 and the tool fails.
+KERNEL=="hidraw*", ATTRS{idVendor}=="0ecb", ATTRS{idProduct}=="20d9", MODE="0660", GROUP="input", TAG+="uaccess"

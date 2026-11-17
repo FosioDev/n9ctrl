@@ -24,7 +24,19 @@ and other settings without picking up your phone.
 
 ## Requirements
 
+- Linux kernel >= 5.11 (for `HIDIOCGINPUT`)
 - AKG N9 Hybrid with its USB dongle plugged in (the headset must be connected to the dongle)
+- Access to `/dev/hidraw*` (see udev rules below)
+
+## udev rules
+
+To access the dongle without root, install the udev rule:
+```bash
+sudo cp ./udev/70-n9ctrl.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+Then unplug and replug the dongle.
 
 ## Install
 
